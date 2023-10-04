@@ -1,0 +1,1 @@
+docker run --rm --interactive --tty  --volume /home/danielmajil/Development/awt/foodapp/inc/composer:/app composer composer require monolog/monolog
