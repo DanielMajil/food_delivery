@@ -8,6 +8,23 @@
 
 // header("Content-Type: application/json; charset=UTF-8");
 // include_once "dbtest.php";
+<?php
+// Include necessary files and initialize the application
+
+// Handle routing to the appropriate handler functions based on the URL and HTTP method
+if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['order_id'])) {
+    include 'handler.php';
+} elseif ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['customer_id'], $_POST['items'], $_POST['payment_info'])) {
+    include 'handler.php';
+} elseif ($_SERVER['REQUEST_METHOD'] === 'PUT') {
+    include 'handler.php';
+} elseif ($_SERVER['REQUEST_METHOD'] === 'DELETE' && isset($_GET['order_id'])) {
+    include 'handler.php';
+} else {
+    // Handle other routes or display a 404 error
+}
+?>
+
 
 $clientRequest = $_SERVER["REQUEST_URI"];
 $clientRequestArray = explode("/", $clientRequest);
