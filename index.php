@@ -8,7 +8,6 @@
 
 // header("Content-Type: application/json; charset=UTF-8");
 // include_once "dbtest.php";
-<?php
 // Include necessary files and initialize the application
 
 // Handle routing to the appropriate handler functions based on the URL and HTTP method
