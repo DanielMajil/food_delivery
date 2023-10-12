@@ -44,23 +44,23 @@ CREATE TABLE `order_items` (
 );
 
 -- Sample data for customers
-INSERT INTO `customers` (`name`, `email`, `address`) VALUES
+INSERT INTO `Customers` (`name`, `email`, `address`) VALUES
 ('John Doe', 'john@example.com', '123 Main St'),
 ('Alice Smith', 'alice@example.com', '456 Elm St');
 
 -- Sample data for food items
-INSERT INTO `food_items` (`name`, `price`) VALUES
+INSERT INTO `Items` (`name`, `price`) VALUES
 ('Pizza', 12.99),
 ('Burger', 8.99),
 ('Pasta', 10.49);
 
 -- Sample data for orders
-INSERT INTO `orders` (`customer_id`, `order_name`, `order_status`, `order_total`) VALUES
+INSERT INTO `Orders` (`customer_id`, `order_name`, `order_status`, `order_total`) VALUES
 (1, 'Order 1', 'Pending', 21.48),
 (2, 'Order 2', 'Delivered', 8.99);
 
 -- Sample data for order items
-INSERT INTO `order_items` (`order_id`, `food_item_id`, `quantity`) VALUES
+INSERT INTO `OrderItems` (`order_id`, `food_item_id`, `quantity`) VALUES
 (1, 1, 1),
 (1, 2, 2),
 (2, 3, 1);
