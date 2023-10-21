@@ -1,36 +1,74 @@
 <?php
-// Include necessary files and initialize the database connection
 
-// Handle GET request to get order status
-if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['order_id'])) {
-    // Implement logic to retrieve and return order status
-    $order_id = $_GET['order_id'];
-    $order_status = getOrderStatus($order_id);
-    echo json_encode($order_status);
+define("DBHOST", isset($_ENV["DBHOST"]) ? $_ENV["DBHOST"] : "172.17.0.1");
+define("DBUSER", isset($_ENV["DBUSER"]) ? $_ENV["DBUSER"] : "root");
+define("DBPWD", isset($_ENV["DBPWD"]) ? $_ENV["DBPWD"] : "awtpassword");
+define("DBNAME", isset($_ENV["DBNAME"]) ? $_ENV["DBNAME"] : "FOODAPP");
+
+define("RLHOST", isset($_ENV["RLHOST"]) ? $_ENV["RLHOST"] : "10.0.2.15");
+define("RLPORT", isset($_ENV["RLPORT"]) ? $_ENV["RLPORT"] : "6379");
+define("RLPWD", isset($_ENV["RLPWD"]) ? $_ENV["RLPWD"] : "danielub2023");
+define("RL_MAX", isset($_ENV["RL_MAX"]) ? $_ENV["RL_MAX"] : 3); //maximum requests
+define("RL_SECS", isset($_ENV["RL_SECS"]) ? $_ENV["RL_SECS"] : 10); //maximum 
+
+define("API_SECRET", isset($_ENV["API_SECRET"]) ? $_ENV["API_SECRET"] : "Daniel"); //maximum 
+
+require_once "./inc/composer/vendor/autoload.php";
+
+use Monolog\Level;
+use Monolog\Logger;
+use Monolog\Formatter\LineFormatter;
+use Monolog\Handler\StreamHandler;
+
+class DBHandler
+{
+    public $sqlDB = NULL;
+    public $log = NULL;
+    public $redisDB = NULL; //rate limit. It is redis also
+
+    function __construct()
+    {
+        // INITIALIZE LOGGER
+        $logFilename = date("Y-m-d") . "_activity.log";
+
+        $this->log = new Logger("FOODAPP");
+        $handler = new StreamHandler("log/$logFilename");
+        $handler->setFormatter(new LineFormatter("[%datetime%] %channel%.%level_name%: %message%\n"));
+        $this->log->pushHandler($handler);
+
+        //CONNECTING TO MYSQL ----------------------------------
+        $this->sqlDB = new mysqli(DBHOST, DBUSER, DBPWD, DBNAME);
+        if (mysqli_connect_errno()) {
+            $this->log->error("Error connecting to mysql. Error:[" . mysqli_connect_error() . "]");
+            $this->sqlDB = null;
+        }
+        mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
+
+
+        //CONNECTING TO REDIS ----------------------------------
+        try {
+            $this->redisDB = new Redis();
+            if (!$this->redisDB->connect(RLHOST, RLPORT)) {
+                $this->log->error("Unable to connect to Redis");
+                $this->redisDB = null;
+            }
+            if (!$this->redisDB->auth(RLPWD)) {
+                $this->log->error("Redis auth failed");
+                $this->redisDB = null;
+            }
+
+        } catch (RedisException $e) {
+            $this->log->error("Redis Object Creation Failed.");
+        }
+    }
+
+    function __destruct()
+    {
+        if ($this->sqlDB !== null) {
+            $this->sqlDB->close();
+        }
+        if ($this->redisDB !== null) {
+            $this->redisDB->close();
+        }
+    }
 }
-
-// Handle POST request to place a new order
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['customer_id'], $_POST['items'], $_POST['payment_info'])) {
-    // Implement logic to place a new order
-    $customer_id = $_POST['customer_id'];
-    $items = $_POST['items'];
-    $payment_info = $_POST['payment_info'];
-    $order_id = placeOrder($customer_id, $items, $payment_info);
-    echo json_encode(['order_id' => $order_id, 'status' => 'pending_payment', 'message' => 'Your order has been placed successfully. Please complete the payment to confirm your order.']);
-}
-
-// Implement similar logic for PUT and DELETE methods
-
-function getOrderStatus($order_id) {
-    // Implement database query to retrieve order status
-    // Return order status as an array
-}
-
-function placeOrder($customer_id, $items, $payment_info) {
-    // Implement logic to place a new order and handle payment via Stripe
-    // Return the new order ID
-}
-
-// Implement similar functions for other API endpoints
-
-?>

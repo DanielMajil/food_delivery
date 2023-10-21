@@ -1,0 +1,35 @@
+Table Customers {
+customer_id UUID [primary key]
+customer_name varchar
+customer_number varchar
+customer_address varchar
+}
+Table Orders {
+order_id UUID [primary key]
+customer_id UUID [ref: > Customers.customer_id] // References
+Customers.customer_id
+order_status varchar
+order_message varchar
+}
+Table OrderItems {
+order_item_id UUID [primary key]
+order_id UUID [ref: > Orders.order_id] // References
+Orders.order_id
+item_id UUID [ref: > Items.item_id] // References Items.item_id
+quantity int
+}
+
+Table Items {
+item_id UUID [primary key]
+item_name varchar
+item_price decimal
+}
+Table Payments {
+payment_id UUID [primary key]
+order_id UUID [ref: > Orders.order_id] // References
+Orders.order_id
+card_number varchar
+expiry_month varchar
+expiry_year varchar
+cvv varchar
+}
