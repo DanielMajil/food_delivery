@@ -303,7 +303,7 @@ class FoodApp extends DBHandler
         $subResource = $request;
         $parentResource = $requestParameters[1];
 
-        $validRequest = $this->checkValidMethod($parentResource, $subResource, __FUNCTION);
+        $validRequest = $this->checkValidMethod($parentResource, $subResource, );
         if (!$validRequest) {
             $response["rc"] = -34;
             $this->log->error("No access to resource $parentResource using method DELETE");
